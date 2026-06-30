@@ -18,6 +18,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"
     rel="stylesheet">
+
+
   <script>
     try {
       const saved = localStorage.getItem('theme');
@@ -452,6 +454,75 @@
       }
     });
   </script>
+<canvas id="cursorTrail"></canvas>
+
+<style>
+  #cursorTrail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+  }
+</style>
+
+<script>
+  (function () {
+    const canvas = document.getElementById('cursorTrail');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    const points = [];
+    const maxPoints = 18;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      points.push({ x: mouseX, y: mouseY });
+      if (points.length > maxPoints) points.shift();
+
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        const progress = i / points.length; // 0 (oldest) -> 1 (newest)
+        const radius = progress * 6;
+        const alpha = progress * 0.6;
+
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 4);
+        gradient.addColorStop(0, `rgba(120, 180, 255, ${alpha})`);
+        gradient.addColorStop(1, 'rgba(120, 180, 255, 0)');
+
+        ctx.beginPath();
+        ctx.fillStyle = gradient;
+        ctx.arc(p.x, p.y, radius * 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.arc(p.x, p.y, radius * 0.6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  })();
+</script>
 
 </body>
 
