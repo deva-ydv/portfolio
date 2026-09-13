@@ -32,6 +32,9 @@
 </head>
 
 <body>
+  <div id="preloader">
+  <span id="preloaderText">Hello</span>
+</div>
 
   <nav>
     <a href="mailto:devaydv18@email.com" class="nav-logo" style="letter-spacing: 0.5px;">Malad,Mumbai
@@ -454,6 +457,37 @@
       }
     });
   </script>
+
+  <script>
+  const greetings = ["Hi","Welcome"];
+  const preloader = document.getElementById('preloader');
+  const preloaderText = document.getElementById('preloaderText');
+  document.body.classList.add('no-scroll');
+
+  let i = 0;
+  const wordDuration = 500; // matches animation duration in ms
+  const totalWords = 2; // how many greetings to cycle before revealing site
+
+  function showNextGreeting() {
+    preloaderText.textContent = greetings[i % greetings.length];
+    // restart the animation
+    preloaderText.style.animation = 'none';
+    void preloaderText.offsetWidth; // reflow to restart animation
+    preloaderText.style.animation = `greetFade ${wordDuration}ms ease forwards`;
+
+    i++;
+    if (i < totalWords) {
+      setTimeout(showNextGreeting, wordDuration);
+    } else {
+      setTimeout(() => {
+        preloader.classList.add('hide');
+        document.body.classList.remove('no-scroll');
+      }, wordDuration);
+    }
+  }
+
+  showNextGreeting();
+</script>
 
 
 </body>
